@@ -4,7 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
-
+#include <sys/types.h>
+#include <wait.h>
+#include <fcntl.h>
 #include "Shell.h"
 #include "StringVector.h"
 
@@ -57,9 +59,21 @@ do_help( struct Shell *this, const struct StringVector *args )
     (void)args;
 }
 
-static void
-do_system( struct Shell *this, const struct StringVector *args )
-{
+static void do_system( struct Shell *this, const struct StringVector *args ) {
+    int   nb_tokens = string_vector_size( args );
+    struct StringVector argv;
+    string_vector_init( &argv, nb_tokens - 1 );
+    pid_t pidChild = fork();
+    if ( pidChild == 0 ) {
+    for (int i = 1; i < nb_tokens; i++)
+    {
+        char *argumentParamaters = string_vector_get( args, i );
+        string_vector_add(&argv,argumentParamaters,argumentParamaters + strlen( argumentParamaters ) );
+    }
+    char *fullCommand = string_vector_get( &argv, 0 );
+    execvp( fullCommand, argv.strings );
+    }
+    waitpid( pidChild, NULL, 0 );
     (void)this;
     (void)args;
 }
