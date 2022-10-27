@@ -82,6 +82,16 @@ do_cd( struct Shell *this, const struct StringVector *args )
 }
 
 static void
+do_pwd( struct Shell *this, const struct StringVector *args )
+{
+    char tmp[256];
+    getcwd(tmp,sizeof(tmp));
+    printf("%s\n", tmp);
+    (void)this;
+    (void)args;
+}
+
+static void
 do_rappel( struct Shell *this, const struct StringVector *args )
 {
     (void)this;
@@ -111,7 +121,7 @@ static struct {
 } actions[] = { { .name = "exit", .action = do_exit },     { .name = "cd", .action = do_cd },
                 { .name = "rappel", .action = do_rappel }, { .name = "help", .action = do_help },
                 { .name = "?", .action = do_help },        { .name = "!", .action = do_system },
-                { .name = NULL, .action = do_execute } };
+                { .name = "pwd", .action = do_pwd},        { .name = NULL, .action = do_execute }};
 
 Action
 get_action( char *name )
